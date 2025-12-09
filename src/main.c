@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "parser.h"
+#include "utils.h"
 
 /* 512 byte input
  * 1 byte \n
@@ -43,6 +44,11 @@ int main(void) {
     int argc = parse_args(buffer, args);
 
     if (argc == 0) continue; 
+
+    if (strcmp(args[0], "cd") == 0) {
+        change_directory(args, argc);
+        continue;
+    } 
 
     pid_t pid = fork();
 

@@ -11,10 +11,8 @@
  * 1 byte \0
  * 2 byte safety (güvenlik)
  * */
-#define MAX_INPUT_SIZE 516
 
 int main(void) {
-   
     char *args[MAX_ARGS];
     char buffer[MAX_INPUT_SIZE];
     int status;
@@ -41,6 +39,8 @@ int main(void) {
        exit(EXIT_SUCCESS); 
     }
 
+    add_to_history(buffer);
+
     int argc = parse_args(buffer, args);
 
     if (argc == 0) continue; 
@@ -48,7 +48,10 @@ int main(void) {
     if (strcmp(args[0], "cd") == 0) {
         change_directory(args, argc);
         continue;
-    } 
+    } else if (strcmp(args[0], "history") == 0) {
+        show_history();
+        continue;
+    }
 
     pid_t pid = fork();
 

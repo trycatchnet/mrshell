@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include "parser.h"
 #include "utils.h"
+#include "terminal.h"
 
 /* 512 byte input
  * 1 byte \n
@@ -21,7 +22,13 @@ int main(void) {
 
     printf("mr_shell> ");
     fflush(stdout); /* It's important to use fflush(stdout) we are flushing the output before getting a input.*/
-    fgets(buffer, sizeof(buffer), stdin);
+    
+    int len = read_line(buffer, sizeof(buffer));
+
+    if (len == -1) {
+        printf("exit\n");
+        exit(EXIT_SUCCESS);
+    }
 
     /*
      * Example algorithm that you can use.
@@ -30,8 +37,6 @@ int main(void) {
         if (buffer[i] == '\n') buffer[i] = '\0';
     }
     */
-
-    buffer[strcspn(buffer, "\n")] = '\0';
 
     if (buffer[0] == '\0') continue;
 

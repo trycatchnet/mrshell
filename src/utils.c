@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 void change_directory(char **args, int argc) {
    if (argc < 2) {
@@ -29,8 +30,18 @@ void get_history_path(char *path, size_t size) {
     }
 }
 
+static int is_empty_or_whitespace(const char *str) {
+    if (str == NULL || str[0] == '\0') return 1;
+
+    while (*str) {
+        if (!isspace((unsigned char)*str)) return 0;
+        str++;
+    }
+    return 1;
+}
+
 void add_to_history(const char *command) {
-    if (command[0] == '\0') return;
+    if (is_empty_or_whitespace(command)) return;
 
     char history_path[512];
     get_history_path(history_path, sizeof(history_path));
@@ -44,8 +55,11 @@ void add_to_history(const char *command) {
         char line[MAX_INPUT_SIZE];
         while (fgets(line, sizeof(line), f) && line_count < MAX_HISTORY) {
            line[strcspn(line, "\n")] = '\0';
-           lines[line_count] = strdup(line);
-           line_count++;
+
+           if (!is_empty_or_whitespace(line)) {
+            lines[line_count] = strdup(line);
+            line_count++;
+           }
         }
         fclose(f);
     }
@@ -89,8 +103,10 @@ void show_history(void) {
     char line[MAX_INPUT_SIZE];
     int line_num = 1;
 
-    while (fgets(line, sizeof(line), f)) {
-        printf("%4d  %s", line_num++, line);
+    while (fgets(line, sizeof(line), f)) {    
+        if (!is_empty_or_whitespace(line)) {
+            printf("%4d  %s", line_num++, line); 
+        }
     }
 
     fclose(f);
